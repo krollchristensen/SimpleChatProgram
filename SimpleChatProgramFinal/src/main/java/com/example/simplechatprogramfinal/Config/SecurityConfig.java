@@ -1,4 +1,5 @@
 package com.example.simplechatprogramfinal.Config;
+import com.example.simplechatprogramfinal.Usecase.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,8 +17,8 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    //  private final CustomUserDetailsService customUserDetailsService;
- //   private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * Constructs a new SecurityConfig.
@@ -25,12 +26,11 @@ public class SecurityConfig {
      * @param customUserDetailsService the CustomUserDetailsService instance
      * @param bCryptPasswordEncoder the BCryptPasswordEncoder instance
      */
-   /* public SecurityConfig(CustomUserDetailsService customUserDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.customUserDetailsService = customUserDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
-
-    */
 
     /**
      * Configures the security filter chain.
@@ -72,9 +72,7 @@ public class SecurityConfig {
      * @param auth the AuthenticationManagerBuilder instance
      * @throws Exception in case of configuration errors
      */
-   /* protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
-
-    */
 }
