@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         System.out.println("it worked" + email + users.getPassword());
         return User.withUsername(users.getEmail())
-                .password(users.getPassword()) 
+                .password(users.getPassword())
                 .build();
     }
 }
