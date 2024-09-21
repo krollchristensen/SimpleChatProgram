@@ -20,59 +20,41 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    /**
-     * Constructs a new SecurityConfig.
-     *
-     * @param customUserDetailsService the CustomUserDetailsService instance
-     * @param bCryptPasswordEncoder the BCryptPasswordEncoder instance
-     */
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.customUserDetailsService = customUserDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+            http
+                    .authorizeHttpRequests(authorizeRequests ->
+                            authorizeRequests
+                                    .requestMatchers(
+                                            new OrRequestMatcher(
+                                                    new AntPathRequestMatcher("/login"),
+                                                    new AntPathRequestMatcher("/home")
+                                            )
+                                    ).permitAll()
+                                    .anyRequest().authenticated()
+                    )
+                    .formLogin(formLogin ->
+                            formLogin
+                                    .loginPage("/login")
+                                    .usernameParameter("email")
+                                    .defaultSuccessUrl("/home")
+                                    .permitAll()
+                    )
+                    .logout(logout ->
+                            logout
+                                    .logoutUrl("/logout")
+                                    .logoutSuccessUrl("/LoginPage?logout")
+                    );
+            return http.build();
+        }
 
-    /**
-     * Configures the security filter chain.
-     *
-     * @param http the HttpSecurity instance
-     * @return the SecurityFilterChain instance
-     * @throws Exception in case of configuration errors
-     */
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(
-                                        new OrRequestMatcher(
-                                                new AntPathRequestMatcher("/login"),
-                                                new AntPathRequestMatcher("/home")
-                                        )
-                                ).permitAll()
-                                .anyRequest().authenticated()
-                )
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/login")
-                                .defaultSuccessUrl("/home")
-                                .permitAll()
-                )
-                .logout(logout ->
-                        logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/LoginPage?logout")
-                );
-        return http.build();
-    }
 
-    /**
-     * Configures the authentication manager with custom user details service and password encoder.
-     *
-     * @param auth the AuthenticationManagerBuilder instance
-     * @throws Exception in case of configuration errors
-     */
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(bCryptPasswordEncoder);
-    }
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(customUserDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        }
 }

@@ -1,7 +1,7 @@
 package com.example.simplechatprogramfinal.DBController.user;
 
-import com.example.simplechatprogramfinal.Entity.User;
+import com.example.simplechatprogramfinal.Entity.Users;
 
 public interface UserRepository {
-    User getUserByEmail(String email);
+    Users getUserByEmail(String email);
 }

@@ -1,6 +1,6 @@
 package com.example.simplechatprogramfinal.DBController.user;
 
-import com.example.simplechatprogramfinal.Entity.User;
+import com.example.simplechatprogramfinal.Entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -17,10 +17,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Users getUserByEmail(String email) {
         String sql = "select * from users where email = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), email);
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Users.class), email);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
