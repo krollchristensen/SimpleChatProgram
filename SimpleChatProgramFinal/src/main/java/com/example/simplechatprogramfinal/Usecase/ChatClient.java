@@ -4,6 +4,7 @@ package com.example.simplechatprogramfinal.Usecase;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -14,6 +15,7 @@ public class ChatClient {
     private PrintWriter printWriter;
     private BufferedReader in;
     private String clientId;
+
 
     public ChatClient(String serverHost, int serverPort) throws IOException {
         this.socket = new Socket(serverHost, serverPort);
@@ -54,8 +56,9 @@ public class ChatClient {
     }
 
     public static void main(String[] args) {
-        String serverHost = "localhost";
-        int serverPort = 8080;
+        ReadServerConfigFile readServerConfigFile = new ReadServerConfigFile();
+        String serverHost = readServerConfigFile.getServerHost();
+        int serverPort = readServerConfigFile.getServerPort();
 
         try {
             ChatClient client = new ChatClient(serverHost, serverPort);

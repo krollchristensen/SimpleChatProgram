@@ -15,15 +15,21 @@ public class MessageProtocol implements Runnable {
 
     private ChatServer chatServer;
 
-    public MessageProtocol(Socket socket,ChatServer chatServer, String clientId) throws IOException {
+    private ClientManager clientManager;
+
+    private MessageSender messageSender;
+
+    public MessageProtocol(Socket socket,ClientManager clientManager, String clientId) throws IOException {
         this.clientSocket = socket;
         this.clientId = clientId;
-        this.chatServer = chatServer;
+        this.clientManager = clientManager;
+
+        this.messageSender = new MessageSender();
 
         this.printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-        chatServer.registerClient(clientId,printWriter);
+        clientManager.registerClient(clientId,printWriter);
     }
     @Override
     public void run() {
@@ -37,7 +43,7 @@ public class MessageProtocol implements Runnable {
 
             String messageType = in.readLine().trim();
 
-            while (messageType != null) {
+            while (true) {
                 switch (messageType) {
                     case "1":
                         printWriter.println("Enter the target client ID for unicast:");
@@ -50,14 +56,14 @@ public class MessageProtocol implements Runnable {
                         String unicastMessage = in.readLine().trim();
 
 
-                        chatServer.UnicastMessage(clientId, unicastMessage, targetClientID);
+                        messageSender.messageTypeUnicast(clientId, unicastMessage, targetClientID,clientManager.getClients());
                         break;
 
                     case "2":
                         printWriter.println("Enter your message for broadcast:");
                         printWriter.flush();
                         String broadcastMessage = in.readLine().trim();
-                        chatServer.BroadcastMessage(clientId,broadcastMessage);
+                        messageSender.messageTypeBroadcastMessage(clientId,broadcastMessage,clientManager.getClients());
                         break;
 
                     default:
@@ -73,7 +79,7 @@ public class MessageProtocol implements Runnable {
         } catch (IOException e) {
             logger.severe("Error handling client: " + e.getMessage());
         } finally {
-            chatServer.unregisterClient(clientId);
+            clientManager.unregisterClient(clientId);
             try {
                 clientSocket.close();
             } catch (IOException e) {
