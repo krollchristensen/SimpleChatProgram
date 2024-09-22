@@ -12,6 +12,8 @@ public class ChatServer {
     private  int clientCounter = 1;
     private ClientManager clientManager;
 
+
+
     public ChatServer() {
         threadpool = Executors.newCachedThreadPool();
         clientManager = new ClientManager();
@@ -20,7 +22,6 @@ public class ChatServer {
     public void ServerStart() {
         ReadServerConfigFile readServerConfigFile = new ReadServerConfigFile();
         int serverPort = readServerConfigFile.getServerPort();
-
         try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
             logger.info("ChatServer has been started on PORT: " + serverPort);
 
