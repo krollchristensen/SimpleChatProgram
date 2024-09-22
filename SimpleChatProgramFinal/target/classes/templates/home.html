@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Regnessem</title>
 </head>
 <body>
-    <h1>Test</h1>
+    <div th:if="${#authentication.principal != 'anonymousUser'}">
+        <h1>Welcome, <span th:text="${@userUtil.getCurrentUsername() ?: 'User'}"></span>!</h1>
+    </div>
+    <div th:if="${#authentication.principal == 'anonymousUser'}">
+        <h1>Please log in to access the chat.</h1>
+        <a th:href="@{/login}">Login</a>
+    </div>
 </body>
 </html>

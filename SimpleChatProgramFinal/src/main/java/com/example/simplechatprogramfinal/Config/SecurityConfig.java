@@ -1,5 +1,7 @@
 package com.example.simplechatprogramfinal.Config;
+import com.example.simplechatprogramfinal.Usecase.ChatClient;
 import com.example.simplechatprogramfinal.Usecase.CustomUserDetailsService;
+import com.example.simplechatprogramfinal.Usecase.ReadServerConfigFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
