@@ -10,7 +10,7 @@
 
     public class ChatServer {
         private static final Logger logger = Logger.getLogger(ChatServer.class.getName());
-        private static final int PORT = 8080;
+        private static final int PORT = 5000;
         private ExecutorService threadpool;
         private int clientCounter = 1;
 
@@ -36,6 +36,7 @@
                 logger.severe("Server not found" + u.getMessage());
             } catch (IOException e) {
                 logger.severe("Server failed to start: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 

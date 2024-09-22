@@ -14,6 +14,8 @@ public class ChatClient {
     private PrintWriter printWriter;
     private BufferedReader in;
     private String clientId;
+    private static final int PORT = 5000;
+    private static final String serverHost = "localhost";
 
     public ChatClient(String serverHost, int serverPort) throws IOException {
         this.socket = new Socket(serverHost, serverPort);
@@ -24,6 +26,16 @@ public class ChatClient {
         logger.info("Connected as " + clientId);
 
         new Thread(this::readMessagesFromServer).start();
+    }
+
+    public void startClient() {
+        try {
+            ChatClient client = new ChatClient(serverHost, PORT);
+            logger.info("Connected to the server at " + serverHost + ":" + PORT);
+            client.sendMessageToServer();
+        } catch (IOException e) {
+            logger.severe("Connection to the server failed: " + e.getMessage());
+        }
     }
 
     private void readMessagesFromServer() {
@@ -55,7 +67,7 @@ public class ChatClient {
 
     public static void main(String[] args) {
         String serverHost = "localhost";
-        int serverPort = 8080;
+        int serverPort = 5000;
 
         try {
             ChatClient client = new ChatClient(serverHost, serverPort);
