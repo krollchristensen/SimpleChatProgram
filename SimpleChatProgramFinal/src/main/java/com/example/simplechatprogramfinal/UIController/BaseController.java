@@ -6,11 +6,10 @@ import com.example.simplechatprogramfinal.DBController.user.UserRepository;
 import com.example.simplechatprogramfinal.Usecase.ReadServerConfigFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,17 +22,15 @@ public class BaseController {
 
 
     @Autowired
-    private UserRepository userRepository;  // User repository for fetching user details
+    private UserRepository userRepository;
 
-    // Store active clients
     private ConcurrentHashMap<String, Thread> activeClients = new ConcurrentHashMap<>();
 
-    @GetMapping("")
+    @GetMapping("/home")
     public String homepage(Model model, Authentication authentication) {
         if (authentication != null) {
             String email = authentication.getName();
 
-            // Check if the client for this user is already running
             if (!activeClients.containsKey(email)) {
                 logger.info("User {} is accessing the homepage. Starting ChatClient..." + email);
 
@@ -41,7 +38,6 @@ public class BaseController {
                 String serverHost = readServerConfigFile.getServerHost();
                 int serverPort = readServerConfigFile.getServerPort();
 
-                // Start the ChatClient in a new thread
                 Thread clientThread = new Thread(() -> {
                     ChatClient.startChatClient(serverHost, serverPort);
                     logger.info("ChatClient for user {} started successfully." + email);
@@ -53,9 +49,21 @@ public class BaseController {
                 logger.info("ChatClient for user {} is already running." + email);
             }
 
-            // Add current user to the model
             model.addAttribute("currentUser", email);
-            model.addAttribute("activeUsers", activeClients.keySet()); // Pass active users to the view
+            model.addAttribute("activeUsers", activeClients.keySet());
+        }
+        return "home";
+    }
+
+    @GetMapping("/selectUser")
+    public String selectUser(@RequestParam String email, Model model, Authentication authentication) {
+        Users user = userRepository.getUserByEmail(email);
+        model.addAttribute("selectedUser", user);
+
+        if (authentication != null) {
+            String currentEmail = authentication.getName();
+            model.addAttribute("activeUsers", activeClients.keySet());
+            model.addAttribute("currentUser", currentEmail);
         }
 
         return "home";
@@ -66,7 +74,5 @@ public class BaseController {
         model.addAttribute("user", new Users());
         return "login";
     }
-
-
 }
 
