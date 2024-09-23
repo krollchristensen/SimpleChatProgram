@@ -28,7 +28,7 @@
                     Socket clientSocket = serverSocket.accept();
                     String clientId = "client" + clientCounter++;
                     logger.info("Client connected with ID: " + clientId);
-                    threadpool.execute(new MessageProtocol(clientSocket, clientManager, clientId));
+                    threadpool.execute(new MessageSender(clientSocket, clientManager, clientId));
                 }
             } catch (UnknownHostException u) {
                 logger.severe("Server not found: " + u.getMessage());

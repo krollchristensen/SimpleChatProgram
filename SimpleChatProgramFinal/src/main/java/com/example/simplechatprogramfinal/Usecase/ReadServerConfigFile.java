@@ -17,7 +17,6 @@ public class ReadServerConfigFile {
 
     private void loadProperties() {
         File file = new File("SimpleChatProgramFinal/src/main/java/com/example/simplechatprogramfinal/Config/Server.properties");
-        System.out.println("File exists: " + file.exists());
 
         try (InputStream input = new FileInputStream(file)) {
             properties.load(input);

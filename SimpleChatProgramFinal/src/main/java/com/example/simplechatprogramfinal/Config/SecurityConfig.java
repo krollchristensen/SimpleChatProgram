@@ -38,7 +38,10 @@ public class SecurityConfig {
                                                     new AntPathRequestMatcher("/home")
                                             )
                                     ).permitAll()
+                                    .requestMatchers(new AntPathRequestMatcher("/sendMessage")).authenticated()
+
                                     .anyRequest().authenticated()
+                            
                     )
                     .formLogin(formLogin ->
                             formLogin
@@ -52,6 +55,7 @@ public class SecurityConfig {
                                     .logoutUrl("/logout")
                                     .logoutSuccessUrl("/LoginPage?logout")
                     );
+          
             return http.build();
         }
 
