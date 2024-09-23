@@ -5,12 +5,17 @@
     <title>Regnessem</title>
 </head>
 <body>
-    <div th:if="${#authentication.principal != 'anonymousUser'}">
-        <h1>Welcome, <span th:text="${@userUtil.getCurrentUsername() ?: 'User'}"></span>!</h1>
-    </div>
-    <div th:if="${#authentication.principal == 'anonymousUser'}">
-        <h1>Please log in to access the chat.</h1>
-        <a th:href="@{/login}">Login</a>
-    </div>
+<div th:if="${#authentication.principal != 'anonymousUser'}">
+    <h1>Welcome, <span th:text="${currentUser}"></span>!</h1>
+
+    <h2>Active Users:</h2>
+    <ul>
+        <li th:each="user : ${activeUsers}" th:text="${user}"></li>
+    </ul>
+</div>
+<div th:if="${#authentication.principal == 'anonymousUser'}">
+    <h1>Please log in to access the chat.</h1>
+    <a th:href="@{/login}">Login</a>
+</div>
 </body>
 </html>
