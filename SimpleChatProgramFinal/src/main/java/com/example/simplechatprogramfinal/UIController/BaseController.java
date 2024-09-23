@@ -30,18 +30,18 @@ public class BaseController {
 
     @GetMapping("")
     public String homepage(Model model, Authentication authentication) {
-
-        System.out.println("hello");
         if (authentication != null) {
             String email = authentication.getName();
 
+            // Check if the client for this user is already running
             if (!activeClients.containsKey(email)) {
-                logger.info("User {} is accessing the homepage. Starting ChatClient..." +  email);
+                logger.info("User {} is accessing the homepage. Starting ChatClient..." + email);
 
                 ReadServerConfigFile readServerConfigFile = new ReadServerConfigFile();
                 String serverHost = readServerConfigFile.getServerHost();
                 int serverPort = readServerConfigFile.getServerPort();
 
+                // Start the ChatClient in a new thread
                 Thread clientThread = new Thread(() -> {
                     ChatClient.startChatClient(serverHost, serverPort);
                     logger.info("ChatClient for user {} started successfully." + email);
@@ -50,8 +50,12 @@ public class BaseController {
                 clientThread.start();
                 activeClients.put(email, clientThread);
             } else {
-                logger.info("ChatClient for user {} is already running." +email);
+                logger.info("ChatClient for user {} is already running." + email);
             }
+
+            // Add current user to the model
+            model.addAttribute("currentUser", email);
+            model.addAttribute("activeUsers", activeClients.keySet()); // Pass active users to the view
         }
 
         return "home";
