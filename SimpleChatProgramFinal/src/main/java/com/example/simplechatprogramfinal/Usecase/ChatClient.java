@@ -51,6 +51,16 @@ public class ChatClient {
         printWriter.flush();
     }
 
+    public static void startChatClient(String serverHost, int serverPort) {
+        try {
+            ChatClient client = new ChatClient(serverHost, serverPort);
+            logger.info("Connected to the server at " + serverHost + ":" + serverPort);
+            client.sendMessageToServer(); // Optional: Start sending messages if needed
+        } catch (IOException e) {
+            logger.severe("Connection to the server failed: " + e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
         ReadServerConfigFile readServerConfigFile = new ReadServerConfigFile();
         String serverHost = readServerConfigFile.getServerHost();
@@ -65,4 +75,3 @@ public class ChatClient {
         }
     }
 }
-
