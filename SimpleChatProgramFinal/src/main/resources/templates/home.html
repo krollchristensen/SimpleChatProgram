@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" th:href="@{/css/homePage.css}">
 <head>
     <meta charset="UTF-8">
-    <title>Regnessem</title>
+    <title>Messenger</title>
 </head>
 <body>
-<div th:if="${#authentication.principal != 'anonymousUser'}">
-    <h1>Welcome, <span th:text="${currentUser}"></span>!</h1>
+    <div th:if="${#authentication.principal != 'anonymousUser'}">
+        <h1 class="welcomeText">Welcome, <span th:text="${@userUtil.getCurrentUsername() ?: 'User'}"></span>!</h1>
 
-    <h2>Active Users:</h2>
-    <ul>
-        <li th:each="user : ${activeUsers}" th:text="${user}"></li>
-    </ul>
-</div>
-<div th:if="${#authentication.principal == 'anonymousUser'}">
-    <h1>Please log in to access the chat.</h1>
-    <a th:href="@{/login}">Login</a>
-</div>
+        <div class="chat">
+            <span th:text="${selectedUser?.username ?: 'Select a user to chat with'}">User</span>
+            <div th:if="${selectedUser}" class="input-container">
+                <textarea placeholder="Aa"></textarea>
+                <button>Send</button>
+            </div>
+        </div>
+
+        <div class="activeUsers">
+            <h2>Chats</h2>
+            <ul>
+                <li th:each="user : ${activeUsers}">
+                    <a th:href="@{/selectUser(email=${user})}" th:method="GET">
+                        <span>Navn</span>
+                        <span th:text="${user}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div th:if="${#authentication.principal == 'anonymousUser'}">
+        <h1>Please log in to access the chat.</h1>
+        <a th:href="@{/login}">Login</a>
+    </div>
 </body>
 </html>
