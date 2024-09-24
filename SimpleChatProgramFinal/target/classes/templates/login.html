@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link th:href="@{/css/loginPage.css}" rel="stylesheet">
 </head>
 <body>
     <div class="content">
         <form th:action="@{/login}" th:method="post">
-            <input type="text" id="email" name="email" placeholder="Email" required>
-            <input type="password" id="password" name="password" placeholder="Adgangskode" required>
+            <p class="chadsterTxt">Chadster</p>
+            <input type="text" id="email" name="email" placeholder="E-mail" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
             <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-            <button type="submit">Log ind</button>
+            <button type="submit">Login</button>
+            <p>Forgot password?</p>
         </form>
     </div>
 </body>
