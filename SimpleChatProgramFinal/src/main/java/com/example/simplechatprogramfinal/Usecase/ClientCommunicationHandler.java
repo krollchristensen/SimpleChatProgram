@@ -14,17 +14,26 @@ public class ClientCommunicationHandler {
 
     private String clientId;
 
+    /**
+     * Initializes the client communication handler and connects to the server.
+     */
+
     public ClientCommunicationHandler(String serverHost, int serverPort) throws IOException {
         this.socket = new Socket(serverHost, serverPort);
         this.printWriter = new PrintWriter(socket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        this.clientId = in.readLine().split(": ")[1];
+        this.clientId = in.readLine();
         logger.info("Connected as " + clientId);
 
 
         new Thread(this::readMessagesFromServer).start();
     }
+
+    /**
+     * Reads servers message
+     * prints the message in the client console
+     */
 
     private void readMessagesFromServer() {
         try {
@@ -37,6 +46,10 @@ public class ClientCommunicationHandler {
         }
     }
 
+    /**
+     * Sends messages to the server
+     * reads the input
+     */
     public void sendMessageToServer() {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
@@ -48,6 +61,10 @@ public class ClientCommunicationHandler {
         }
     }
 
+    /**
+     * Sends the message content to the server.
+     * @param messageContent the content of the message to send
+     */
     private void sendMessageContent(String messageContent) {
         printWriter.println(messageContent);
         printWriter.flush();

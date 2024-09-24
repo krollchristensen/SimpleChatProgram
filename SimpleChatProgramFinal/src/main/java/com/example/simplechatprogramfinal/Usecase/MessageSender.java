@@ -3,7 +3,9 @@ package com.example.simplechatprogramfinal.Usecase;
 import java.io.*;
 import java.net.Socket;
 import java.util.logging.Logger;
-
+/**
+ * Handles the communication between the server and a single client.
+ */
 public class MessageSender implements Runnable {
     private static final Logger logger = Logger.getLogger(MessageSender.class.getName());
     private final Socket clientSocket;
@@ -23,7 +25,6 @@ public class MessageSender implements Runnable {
 
     /**
      * Handles client communication by prompting the user to select a message type
-     * @throws IOException
      */
     @Override
     public void run() {
