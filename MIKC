@@ -1,0 +1,93 @@
+
+Jeg har kun se på det kode der er i package usecase. Drop spring boot og hold jer til en konsol/terminal
+
+Husk alle i gruppe skal deltage 
+Mads505m 16 commits
+Spi0nDK 4 commits
+OliverS1337 1 commit
+
+
+
+Din (=jeres) kode er klar, struktureret og let at læse. Du anvender konsekvent god logging, hvilket gør det nemmere at diagnosticere fejl. Arkitekturen er modulært opbygget med klare ansvarsområder, og din brug af ExecutorService viser, at du har fokus på skalerbarhed. Protokol-håndteringen er godt abstraheret i en separat klasse, hvilket gør det nemt at udvide funktionaliteten. Samlet set er din kodebase godt organiseret og viser en stærk forståelse for Java og softwarearkitektur. Flot arbejde!
+
+Her er feedback og feedforward
+
+Arkitektur
+Separation af ansvar
+Koden i MessageSender og ClientCommunicationHandler kombinerer både logik for kommunikation og protokoller. Det kunne være en fordel at separere disse i forskellige klasser for bedre genbrug og lettere vedligeholdelse. Opret f.eks. en MessageHandler klasse, der udelukkende håndterer protokollen (unicast, broadcast osv.).
+
+Dependency Injection
+I stedet for at instantiere ReadServerConfigFile direkte i ChatClient og ChatServer, overvej at injicere afhængigheden. Dette gør det nemmere at teste og skifter konfiguration uden at ændre selve klasserne.
+
+Multithreading-håndtering
+Du anvender Executors.newCachedThreadPool(), hvilket er fint, men du bør også sikre, at ressourcer som socket-forbindelser lukkes korrekt. Overvej at bruge en try-with-resources for bedre ressourcestyring i multitrådet miljø.
+
+OOP-forbedringer
+Encapsulation
+I ClientManager bør clients-MAP være privat, og metoder som getClients() bør returnere en kopi eller en wrapper for at undgå, at klientlisten manipuleres udefra.
+
+Interface-driven development
+Overvej at introducere interfaces til dine centrale klasser som ClientHandler, MessageSender, ClientManager osv. Dette vil gøre det nemmere at udvide og teste i fremtiden. F.eks. kunne du have et ClientCommunication interface, som ClientCommunicationHandler implementerer.
+
+Error handling
+Lige nu logger du fejlmeddelelser mange steder, hvilket er godt, men der er ikke noget egentligt feedback til brugeren i nogle af disse tilfælde. Overvej at sende feedback til klienten i tilfælde af fejl (f.eks. mislykkede beskeder).
+
+Specifikke forbedringsforslag i koden
+ChatClient.java
+
+Du kan gøre ClientCommunicationHandler communicationHandler til en instansvariabel i stedet for at have den i startChatClient, hvilket ville gøre det lettere at lukke ressourcer korrekt senere.
+private ClientCommunicationHandler communicationHandler;
+
+public static void startChatClient(String serverHost, int serverPort) {
+    try {
+        communicationHandler = new ClientCommunicationHandler(serverHost, serverPort);
+        logger.info("Connected to the server at " + serverHost + " and Port: " + serverPort);
+        communicationHandler.sendMessageToServer();
+    } catch (UnknownHostException e) {
+        logger.severe("Unknown host: " + serverHost);
+    } catch (ConnectException e) {
+        logger.severe("Connection to the server failed: " + e.getMessage());
+    } catch (IOException e) {
+        logger.severe("I/O error occurred when connecting to the server: " + e.getMessage());
+    }
+}
+
+ClientManager.java
+
+Metoden getClients bør returnere en uændret map i stedet for at eksponere clients direkte. Det kan gøres ved at returnere en kopi af klientlisten.
+public Map<String, PrintWriter> getClients() {
+    return Collections.unmodifiableMap(clients);
+}
+
+MessageSender.java
+
+Når du håndterer valget af beskedtype, kan det være bedre at flytte denne logik til en separat klasse, så MessageSender kun håndterer afsendelse af beskeder. F.eks. kan du oprette en MessageTypeHandler, der håndterer de forskellige beskedtyper.
+
+private final MessageTypeHandler messageTypeHandler;
+
+public MessageSender(Socket socket, ClientManager clientManager, String clientId) throws IOException {
+    this.clientSocket = socket;
+    this.clientId = clientId;
+    this.clientManager = clientManager;
+    this.messageTypeHandler = new MessageTypeHandler();  // Ny klasse for at håndtere typer af beskeder
+}
+
+Yderligere anbefalinger
+Loggerbrug: I stedet for at gentage logger.severe flere steder, kan du centralisere din fejlhåndtering i en separat metode eller klasse, der håndterer logging og evt. brugerbeskeder, hvilket gør koden renere.
+
+Protokol-håndtering: Hvis du ønsker at udvide til at understøtte flere typer beskeder (som emojis og filoverførsel), bør du overveje at gøre MessageProtocol udvidbar og potentielt uddelegere ansvaret til specifikke protokolklasser, så du ikke får en stor klasse med mange switch-cases.
+
+#####Hvad så nu :)#######
+I skal fokusere på følgende områder nu:
+	Multithreading og socket-programmering: Sørg for, at serveren håndterer flere samtidige klienter ved hjælp af tråde. De skal også sikre, at hver klient kan oprette en stabil forbindelse til serveren. <-- jeg har ikke testet 
+
+	Beskedhåndtering (Broadcast og Unicast): Implementér korrekt videresendelse af beskeder, både til alle klienter (broadcast) og til specifikke klienter (unicast).
+
+	Beskedprotokollen: Implementér beskedprotokollen korrekt med klient-ID, tidsstempel og beskedtype (tekst, filoverførsel, emoji).
+
+	Simpel filoverførsel og emoji-support: Start med tekstbeskeder, og planlæg udvidelse til filoverførsel og emoji-support senere.
+
+	Kommandoprompt-interface: Fokuser på at udvikle en simpel kommandoprompt-interface til at sende og modtage beskeder. DROP SPRING BOOT <-- vi kommer senere til at arbejde med UI
+
+Vi ses i morgen :)
+
